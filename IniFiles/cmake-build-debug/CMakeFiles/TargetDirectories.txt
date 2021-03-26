@@ -1,0 +1,3 @@
+D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/IniFiles.dir
+D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/rebuild_cache.dir
