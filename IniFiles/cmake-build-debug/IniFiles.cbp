@@ -74,7 +74,19 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/functions.c">
+			<Option target="IniFiles"/>
+		</Unit>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/functions.h">
+			<Option target="IniFiles"/>
+		</Unit>
 		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/main.c">
+			<Option target="IniFiles"/>
+		</Unit>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/structures.c">
+			<Option target="IniFiles"/>
+		</Unit>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/structures.h">
 			<Option target="IniFiles"/>
 		</Unit>
 		<Unit filename="D:/AI_year1/LowLevelProgramming/IniFiles/CMakeLists.txt">

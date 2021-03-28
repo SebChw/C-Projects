@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/IniFiles.dir/functions.c.obj"
   "CMakeFiles/IniFiles.dir/main.c.obj"
+  "CMakeFiles/IniFiles.dir/structures.c.obj"
   "IniFiles.exe"
   "IniFiles.exe.manifest"
   "IniFiles.pdb"

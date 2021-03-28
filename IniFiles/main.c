@@ -1,54 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-char *trim(char *str)
-{
-    size_t len = 0; //length of the string
-    char *frontp = str; //pointer at the beginning of the string
-    char *endp = NULL; // pointer at the end of the string
+#include "functions.h"
+#include "structures.h"
 
-    if( str == NULL ) { return NULL; } //If the string is Null we return Null
-    if( str[0] == '\0' ) { return str; } //If the string is empty we also return it
-
-    len = strlen(str); //getting length of str
-    endp = str + len; //setting the endp pointer at the end of the string, now it is set before \0 sign
-
-    /* Move the front and back pointers to address the first non-whitespace
-     * characters from each end.
-     */
-    while( isspace((unsigned char) *frontp) ) { ++frontp; } //while current char is a space we moving forward our pointer
-    if( endp != frontp ) // this condition will be met if our string contains chars different than white-spaces
-    {
-        while( isspace((unsigned char) *(--endp)) && endp != frontp ) {}  //we move our pointer until we have spaces or we met front pointer
-    }
-
-    if( frontp != str && endp == frontp ) // if we moved front pointer and both pointers've met string contains only white-spaces
-        *str = '\0';
-    else if( str + len - 1 != endp ) //if we moved end pointer we set null character right after it
-        *(endp + 1) = '\0';
-
-    /* Shift the string so that it starts at str so that if it's dynamically
-     * allocated, we can still free it on the returned pointer.  Note the reuse
-     * of endp to mean the front of the string buffer now.
-     */
-
-    endp = str;
-    if( frontp != str )
-    {
-        while( *frontp ) { *endp++ = *frontp++; }
-        *endp = '\0';
-    }
-
-    return str;
-}
-struct key_value{
-    char * key;
-    char * value;
-};
-struct section{
-    struct key_value * entry;
-};
 
 int main(int argc, char *argv[]) {
 
@@ -60,55 +12,95 @@ int main(int argc, char *argv[]) {
 //        char * value = strtok(NULL, ".");
 //        printf("%s\n%s\n", key, value);
 
-        FILE *ini;
-        ini = fopen("file.ini", "r");
+    FILE *ini; //handler to ini file
 
-        if(!ini){
-            perror("Cant open ini file");
-            return EXIT_FAILURE;
+    int first_key = 0; // this flag is needed because we have to distinguish beetwen adding first key to the section and adding other.
+    ini = fopen("file.ini", "r"); // opening the file
+
+    if(!ini){
+        perror("Cant open ini file");
+        return EXIT_FAILURE;
+    }
+
+    size_t length = 40; //default max length of the string
+
+    char * buf = (char *)malloc(length * sizeof(char)); // alocating memory for our string
+
+    if(!buf){
+        printf("Failed to allocate memory");
+        return -2;
+    }
+
+
+    int number_of_sections = 0; //when we add first section the bahaviour is quite different
+
+    //we begin to read file content and do this until it have some
+    while(fgets(buf, length, ini) != NULL) {
+        //If length of the line is greater than expected we need to expand our buffor for string
+        while( *(buf+strlen(buf)-1) != '\n' && *(buf+strlen(buf)-1) != '\r' ){
+            buf = realloc(buf, 2 * length * sizeof(char));
+            if(!buf){
+                printf("Error with reallocating memory!\n");
+                fclose(ini);
+                return -3;
+            }
+            char * chartmp = malloc(length * sizeof(char)); //we create temporary char not to overwrite our buffor
+            //as we expanded bufor 2 times we need to get only length more characters to fill it fully
+
+            if (chartmp) {
+                fgets(chartmp, length, ini); // we again read from file
+                strcat(buf, chartmp); //we concatenate our buffor with temp char and now it is fully filled
+                length *= 2; // we increase capacity
+
+            }
+            else{
+                printf("Error with reallocating memory!\n");
+                fclose(ini);
+                return -3;
+            }
+            free(chartmp); // we need to free this temporary string
+        }
+        buf = trim(buf); // to get rid of any whitespace characters
+        //functions is defined in functions.c
+        //printf("%s\n", buf);
+
+        //if first character after trimming is '[' then is should be section
+        if(*buf == '['){
+            //if last character is not ] it means that we have invalid ini file
+            if(*(buf + strlen(buf)-1) ==']') {
+                number_of_sections = add_new_section(buf, number_of_sections); //add new section
+                if (number_of_sections > 1) curr = curr->next; // this is needed because we pass that curr pointer to add_new_entry function
+
+                first_key = 1; //now next non empty line should be the key_value pair
+                if(number_of_sections == -1) return -1; // if somehow add_new_section function failed it return -1
+
+
+            }
+            else{
+                printf("Invalid INI file, check if all sections have ']' at the end");
+                return -1;
+            }
+
+        }
+        //if first line is ; it means this is a comment and if it is empty char there is nothing to process
+        else if(*buf == ';' || *buf == '\0') continue;
+        else {
+            //we add new entry and set flag to 0, as from now we should expect more keys or new section
+            add_new_entry(buf, curr, first_key);
+            first_key = 0;
         }
 
-        size_t length = 10; //default max length of the string
-        char * buf = (char *)malloc(length * sizeof(char));
-
-        if(!buf){
-            printf("Failed to allocate memory");
-            return -2;
-        }
-
-       while(fgets(buf, length, ini) != NULL) {
-
-           while( *(buf+strlen(buf)-1) != '\n' && *(buf+strlen(buf)-1) != '\r' ){
-               buf = realloc(buf, 2 * length * sizeof(char));
-               if(!buf){
-                   printf("Error with reallocating memory!\n");
-                   fclose(ini);
-                   return -3;
-               }
-               char * tmp = malloc(length * sizeof(char));
-
-                if (tmp) {
-                    fgets(tmp, length, ini); // we try to
-                    strcat(buf, tmp);
-                    length *= 2; // we increase capacity
-
-                }
-                else{
-                    printf("Error with reallocating memory!\n");
-                    fclose(ini);
-                    return -3;
-                }
-                free(tmp);
-           }
-           printf("%s",buf);
-       }
-       free(buf);
-       fclose(ini);
 
 
-        //free(key_value);
+    }
+    //free bufor, file and whole section and entry structures.
+    free(buf);
+    fclose(ini);
+   free_ini();
+
+    //free(key_value);
 
     //}
-return 0;
+    return 0;
 
 }

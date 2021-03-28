@@ -4,7 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "D:/AI_year1/LowLevelProgramming/IniFiles/functions.c" "D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/IniFiles.dir/functions.c.obj"
   "D:/AI_year1/LowLevelProgramming/IniFiles/main.c" "D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/IniFiles.dir/main.c.obj"
+  "D:/AI_year1/LowLevelProgramming/IniFiles/structures.c" "D:/AI_year1/LowLevelProgramming/IniFiles/cmake-build-debug/CMakeFiles/IniFiles.dir/structures.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

@@ -142,6 +142,33 @@ IniFiles/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/build
 .PHONY : IniFiles/fast
 
+functions.obj: functions.c.obj
+
+.PHONY : functions.obj
+
+# target to build an object file
+functions.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/functions.c.obj
+.PHONY : functions.c.obj
+
+functions.i: functions.c.i
+
+.PHONY : functions.i
+
+# target to preprocess a source file
+functions.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/functions.c.i
+.PHONY : functions.c.i
+
+functions.s: functions.c.s
+
+.PHONY : functions.s
+
+# target to generate assembly for a file
+functions.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/functions.c.s
+.PHONY : functions.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -169,6 +196,33 @@ main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/main.c.s
 .PHONY : main.c.s
 
+structures.obj: structures.c.obj
+
+.PHONY : structures.obj
+
+# target to build an object file
+structures.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/structures.c.obj
+.PHONY : structures.c.obj
+
+structures.i: structures.c.i
+
+.PHONY : structures.i
+
+# target to preprocess a source file
+structures.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/structures.c.i
+.PHONY : structures.c.i
+
+structures.s: structures.c.s
+
+.PHONY : structures.s
+
+# target to generate assembly for a file
+structures.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IniFiles.dir\build.make CMakeFiles/IniFiles.dir/structures.c.s
+.PHONY : structures.c.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -178,9 +232,15 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... IniFiles
+	@echo ... functions.obj
+	@echo ... functions.i
+	@echo ... functions.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... structures.obj
+	@echo ... structures.i
+	@echo ... structures.s
 .PHONY : help
 
 
