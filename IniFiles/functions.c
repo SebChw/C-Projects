@@ -41,3 +41,58 @@ char *trim(char *str)
 
     return str;
 }
+
+int check_alphanumeric(char *str){
+    size_t len = strlen(str); //get length of the string
+    //iterate over string
+    for (size_t i = 0; i < len ; ++i) {
+        if(!isalnum(*(str+i))) {
+            if (*(str+i) != '-')return 1;
+        }
+    }
+    return 0;
+}
+char get_operator(char *str){
+
+    size_t len = strlen(str);
+    for (size_t i = 0; i < len ; ++i) {
+        // if we find one of supported operators we return it
+        if(*(str+i) == '*' || *(str+i) == '/' || (*(str+i) == '-' && *(str+i+1) == ' ') || *(str+i) == '+') {
+            if (*(str+i) == '-') *(str+i) = '^';
+            return *(str+i);
+        }
+    }
+    return 'x'; // if no operator was found
+}
+int search_for_invalid_operator(char * str){
+    size_t len = strlen(str);
+    for (size_t i = 0; i < len ; ++i) {
+        if(!isalnum(*(str+i))) {
+            //if we have none alphanumerical character different from those supported we raise an error
+            if (*(str+i) == '-' || *(str+i) == '.' || *(str+i) == ' ') continue;
+            else {
+                printf("Query contains some forbidden alphanumeric characters! %c", *(str +i));
+
+                return 0;
+            }
+        }
+    }
+    return 1 ; // if everything is fine
+}
+
+void split(char *buf, char *a, char*b, char *delim){
+    char * token = strtok(buf, delim);
+    trim(token); //trim token in case someone put some whitespaces
+    strcpy(a, token); //copy left part to a
+    token = strtok(NULL, delim);
+    strcpy(b,token); //copy right part to b
+
+}
+int check_digit(char *str){
+    size_t len = strlen(str);
+    //scan whole string and check if it contains only digits if it finds one none digit characters returns 0
+    for (size_t i = 0; i < len ; ++i)
+        if(!isdigit(*(str+i))) return 0;
+
+    return 1;
+}

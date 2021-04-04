@@ -28,5 +28,5 @@ struct key_value *keytmp; //we need this to free the keys
 int add_new_section(char * buf, int number_of_sections); //function that adds new section
 int add_new_entry(char *buf, struct section* s, int first); //function that adds another entry to section s
 int free_ini(); //function that free memory of all sections and corresponding entry list
-
+int find_key(struct section * head, char * section, char * key, char * target);
 #endif
