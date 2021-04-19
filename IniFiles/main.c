@@ -12,11 +12,15 @@ int main(int argc, char *argv[]) {
     int first_key = 0; // this flag is needed because we have to distinguish beetwen adding first key to the section and adding other.
     argv++; //moving pointer to the name of the file
     ini = fopen(*argv, "r"); // opening the file
+    //ini = fopen("file.ini", "r");
     argv++; //moving pointer to the argument to find
     //char to_find[256] = "slippery-balance.lonely-nature\0";
     //printf("To do %s\n", to_find);
 
-
+    //*****************************************
+    //TRYING TO READ THE FILE AND CREATE
+    //LINKED LIST WITH STRUCTURES
+    //*****************************************
 
     if(!ini){
         perror("Cant open ini file");
@@ -34,14 +38,19 @@ int main(int argc, char *argv[]) {
 
 
     int number_of_sections = 0; //when we add first section the bahaviour is quite different
+    struct section * first_section = NULL; //this will always point at the beggining of the list
+    struct section * curr = NULL; //this will point at currently considered section
 
-    //we begin to read file content and do this until it have some
+    //we begin to read file content and do this until it have some content
     while(fgets(buf, length, ini) != NULL) {
         //If length of the line is greater than expected we need to expand our buffor for string
         while( *(buf+strlen(buf)-1) != '\n' && *(buf+strlen(buf)-1) != '\r' ){
             buf = realloc(buf, 2 * length * sizeof(char));
             if(!buf){
                 printf("Error with reallocating memory!\n");
+                fclose(ini);
+                free_ini(first_section);
+                free(buf);
                 fclose(ini);
                 return -3;
             }
@@ -57,6 +66,9 @@ int main(int argc, char *argv[]) {
             }
             else{
                 printf("Error with reallocating memory!\n");
+                fclose(ini);
+                free_ini(first_section);
+                free(buf);
                 fclose(ini);
                 return -3;
             }
@@ -75,19 +87,31 @@ int main(int argc, char *argv[]) {
 
                 if(check_alphanumeric(buf+1)) {
                     printf("Invalid value of the section, string %s contains none alphanumeric characters!", buf+1);
+                    free_ini(first_section);
+                    free(buf);
+                    fclose(ini);
                     return 1;
                 }
 
-                number_of_sections = add_new_section(buf, number_of_sections); //add new section
+                first_section = add_new_section(buf, &number_of_sections,first_section); //add new section
+                if(number_of_sections == 1)  curr = first_section; //set curr pointer to the first section
                 if (number_of_sections > 1) curr = curr->next; // this is needed because we pass that curr pointer to add_new_entry function
 
                 first_key = 1; //now next non empty line should be the key_value pair
-                if(number_of_sections == -1) return -1; // if somehow add_new_section function failed it return -1
+                if(first_section == NULL) {
+                    free_ini(first_section);
+                    free(buf);
+                    fclose(ini);
+                    return -1; // if somehow add_new_section function failed it return -1
+                }
 
 
             }
             else{
                 printf("Invalid INI file, check if all sections have ']' at the end");
+                free_ini(first_section);
+                free(buf);
+                fclose(ini);
                 return -1;
             }
 
@@ -97,10 +121,18 @@ int main(int argc, char *argv[]) {
         else {
             //we add new entry and set flag to 0, as from now we should expect more keys or new section
             //If we somehow failed to add the entry return -1
-            if(add_new_entry(buf, curr, first_key) == -1) return 1;
+            if(add_new_entry(buf, curr, first_key) == -1) {
+                free_ini(first_section);
+                free(buf);
+                fclose(ini);
+                return 1;
+            }
             first_key = 0;
         }
     }
+    free(buf);
+    fclose(ini);
+
     //*****************************************
     //STRUCTURE OF INI FILE IS CREATED HERE
     //PERFORMING SEARCH OR ARITHMETIC OPERATION
@@ -122,6 +154,9 @@ int main(int argc, char *argv[]) {
         else if (operator == '+') split(*argv, left, right, "+");
         else{
             printf("Invalid operator!");
+            free_ini(first_section);
+            free(left);
+            free(right);
             return 1;
         }
         //printf("%s %s\n", left, right );
@@ -138,11 +173,48 @@ int main(int argc, char *argv[]) {
         split(left, left_sec, left_key, ".");
         split(right, right_sec, right_key, ".");
 
+        if(check_alphanumeric(left_sec) || check_alphanumeric(right_sec) || check_alphanumeric(left_key) || check_alphanumeric(right_key)){
+            printf("Invalid value of the query, strings contains none alphanumeric characters!");
+            free_ini(first_section);
+            free(left_val);
+            free(right_val);
+            free(left);
+            free(right);
+            free(right_sec);
+            free(left_key);
+            free(right_key);
+            free(left_sec);
+            return 1;
+
+        }
+
         //printf("%s %s %s %s\n", left_sec, left_key, right_sec, right_key);
         //trying to find given section.key pairs
-        if (!find_key(first_section, left_sec, left_key, left_val))  return 1;
+        if (!find_key(first_section, left_sec, left_key, left_val))  {
+            free_ini(first_section);
+            free(left_val);
+            free(right_val);
+            free(left);
+            free(right);
+            free(right_sec);
+            free(left_key);
+            free(right_key);
+            free(left_sec);
+            return 1;
+        }
 
-        if (!find_key(first_section, right_sec, right_key, right_val)) return 1;
+        if (!find_key(first_section, right_sec, right_key, right_val)) {
+            free_ini(first_section);
+            free(left_val);
+            free(right_val);
+            free(left);
+            free(right);
+            free(right_sec);
+            free(left_key);
+            free(right_key);
+            free(left_sec);
+            return 1;
+        }
 
 
         //DOING ARITHMETICS
@@ -161,13 +233,22 @@ int main(int argc, char *argv[]) {
                    printf("%d", left_operand + right_operand);
                    break;
                case '*':
-                   printf("%d", left_operand * right_operand);
+                   printf("%lf", (double)left_operand * (double)right_operand);
                    break;
                case '/': {
                    if (right_operand == 0) {
                        printf("DIVISION BY ZERO!");
+                       free_ini(first_section);
+                       free(left_val);
+                       free(right_val);
+                       free(left);
+                       free(right);
+                       free(right_sec);
+                       free(left_key);
+                       free(right_key);
+                       free(left_sec);
                        return 1;
-                   } else printf("%d", left_operand / right_operand);
+                   } else printf("%lf", (double)left_operand / (double)right_operand);
                    break;
                }
                default:
@@ -188,12 +269,30 @@ int main(int argc, char *argv[]) {
            //if one try to do unsuported operation on strings
            else {
                printf("Invalid operation on string you can only use '+' operator!");
+               free_ini(first_section);
+               free(left_val);
+               free(right_val);
+               free(left);
+               free(right);
+               free(right_sec);
+               free(left_key);
+               free(right_key);
+               free(left_sec);
                return 1;
            }
        }
        //if both have different data type
        else {
            printf("Cannot do operation on string and int!");
+           free_ini(first_section);
+           free(left_val);
+           free(right_val);
+           free(left);
+           free(right);
+           free(right_sec);
+           free(left_key);
+           free(right_key);
+           free(left_sec);
            return 1;
        }
 
@@ -221,21 +320,23 @@ int main(int argc, char *argv[]) {
             free(left_key);
             free(left_sec);
         }
-        else return 1;
+        else {
+            free_ini(first_section);
+
+            return 1;
+        }
     }
 
 
     //free bufor, file and whole section and entry structures.
-    free(buf);
-    fclose(ini);
-    free_ini();
+    free_ini(first_section);
 
     //free(key_value);
 
     }
     //In case user passed too few arguments
     else {
-        printf("Program accepts 2 additional arguments, name of the ini file and section.key string");
+        printf("Program need 2 arguments, name of the ini file and section.key format string!");
     }
     return 0;
 

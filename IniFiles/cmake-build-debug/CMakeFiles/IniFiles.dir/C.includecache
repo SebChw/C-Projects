@@ -6,11 +6,23 @@
 
 #IncludeRegexTransform: 
 
-D:/AI_year1/LowLevelProgramming/IniFiles/functions.c
+D:/AI_year1/LowLevelProgramming/IniFiles/functions.h
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+ctype.h
+-
+
+D:/AI_year1/LowLevelProgramming/IniFiles/main.c
 functions.h
 D:/AI_year1/LowLevelProgramming/IniFiles/functions.h
+structures.h
+D:/AI_year1/LowLevelProgramming/IniFiles/structures.h
 
-D:/AI_year1/LowLevelProgramming/IniFiles/functions.h
+D:/AI_year1/LowLevelProgramming/IniFiles/structures.h
 stdio.h
 -
 stdlib.h
