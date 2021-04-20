@@ -14,6 +14,7 @@ struct section * add_new_section(char * buf, int * number_of_sections, struct  s
         //Already doing this with buffor
         //*(first_section->name + strlen(first_section->name) - 1) = '\0'; //terminate string one character earlier not co contain ]
         first_section->next = NULL; //set next section to the NULL pointer since we don't know if there will be more sections
+        first_section->entry = NULL;
         //tmp = first_section; // set tmp pointer to the first section
         //printf("%s",first_section->name);
         (*number_of_sections)++; //increase the counter of sections
@@ -29,6 +30,7 @@ struct section * add_new_section(char * buf, int * number_of_sections, struct  s
         //Already doing this in main
         //*(next_section->name + strlen(next_section->name) - 1) = '\0';
         next_section-> next = NULL; //there is no more section after the one created
+        next_section->entry = NULL;
         (*number_of_sections)++;
         struct section * tmp = first_section;
         while(tmp->next != NULL) tmp = tmp->next;
@@ -41,7 +43,7 @@ struct section * add_new_section(char * buf, int * number_of_sections, struct  s
     //printf("%s\n",buf);
 }
 
-int add_new_entry(char *buf, struct section* s, int first){
+int add_new_entry(char *buf, struct section* s){
     //At first check if string are valid
     char * token = strtok(buf, "=");
     trim(token); //trim token in case someone put some whitespaces
@@ -66,7 +68,7 @@ int add_new_entry(char *buf, struct section* s, int first){
         return -1;
     }
     //if this is the first entry we just add it to the section as a head
-    if (first == 1){
+    if (s->entry == NULL){
         s->entry = entry;
         entry->next = NULL;
     }

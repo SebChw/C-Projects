@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 
     FILE *ini; //handler to ini file
 
-    int first_key = 0; // this flag is needed because we have to distinguish beetwen adding first key to the section and adding other.
+    //int first_key = 0; // this flag is needed because we have to distinguish beetwen adding first key to the section and adding other.
     argv++; //moving pointer to the name of the file
     ini = fopen(*argv, "r"); // opening the file
     //ini = fopen("file.ini", "r");
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
                 if(number_of_sections == 1)  curr = first_section; //set curr pointer to the first section
                 if (number_of_sections > 1) curr = curr->next; // this is needed because we pass that curr pointer to add_new_entry function
 
-                first_key = 1; //now next non empty line should be the key_value pair
+                //first_key = 1; //now next non empty line should be the key_value pair
                 if(first_section == NULL) {
                     free_ini(first_section);
                     free(buf);
@@ -121,13 +121,13 @@ int main(int argc, char *argv[]) {
         else {
             //we add new entry and set flag to 0, as from now we should expect more keys or new section
             //If we somehow failed to add the entry return -1
-            if(add_new_entry(buf, curr, first_key) == -1) {
+            if(add_new_entry(buf, curr) == -1) {
                 free_ini(first_section);
                 free(buf);
                 fclose(ini);
                 return 1;
             }
-            first_key = 0;
+            //first_key = 0;
         }
     }
     free(buf);
