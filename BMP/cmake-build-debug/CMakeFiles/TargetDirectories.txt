@@ -1,0 +1,3 @@
+D:/AI_year1/LowLevelProgramming/BMP/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/AI_year1/LowLevelProgramming/BMP/cmake-build-debug/CMakeFiles/BMP.dir
+D:/AI_year1/LowLevelProgramming/BMP/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/AI_year1/LowLevelProgramming/BMP/main.c
+stdio.h
+-
+stdint.h
+-
+stddef.h
+-
+string.h
+-
+stdlib.h
+-
+math.h
+-
+
