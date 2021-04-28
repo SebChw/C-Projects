@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
         memset(Histogram[i], 0, 16*sizeof(int));
     }
 
-    printf("Liczymy");
+    //printf("Liczymy");
 
     for (int i = 0; i < height; ++i) {
         int cnt = 0;
