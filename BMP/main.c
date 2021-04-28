@@ -31,11 +31,39 @@ typedef struct tagBITMAPINFOHEADER {
     DWORD biClrImportant; // 4-byte number of important colors (not used)
 }  *LPBITMAPINFOHEADER, *PBITMAPINFOHEADER;
 
+void to_bin(int a, char * s){
+    int it = 0;
+    while(a > 0){
+        s[it] = a%2 + 48;
+        ++it;
+        a /= 2;
+    }
+    while(it < 8){
+        s[it] = '0';
+        ++it;
+    }
+}
 
-int main() {
-    FILE * bmp = fopen("c-programming-97x96.bmp", "rb") ; // file has to be open in binary mode in order to read anything from it
+int to_num(char * s){
+    int k = 1;
+    int ans = 0;
+    for (int i = 0; i < strlen(s); ++i) {
+        int tmp = s[i] - 48;
+        ans += tmp * k;
+        k *= 2;
+    }
+
+    return ans;
+}
+
+int main(int argc, char *argv[]) {
+    if(argc < 2 || argc > 4){
+        printf("Wrong number of parameters\n");
+        return 1;
+    }
+    FILE * bmp = fopen(argv[1], "rb") ; // file has to be open in binary mode in order to read anything from it
     if (!bmp) {
-        printf("Failed to open the file!");
+        printf("Failed to open the file!\n");
         return 1;
     }
     //printf("%llu\n", offsetof(struct tagBITMAPFILEHEADER, bfOffBits));
@@ -68,7 +96,7 @@ int main() {
     //READING SECOND HEADER
     //*******************
     struct tagBITMAPINFOHEADER BITMAPINFOHEADER;
-    printf("%llu\n", sizeof(BITMAPINFOHEADER));
+    printf("%lu\n", sizeof(BITMAPINFOHEADER));
     fread(&BITMAPINFOHEADER, sizeof(struct tagBITMAPINFOHEADER), 1, bmp);
     printf("BITMAPINFOHEADER:\n");
     printf("biSize: %u\n", BITMAPINFOHEADER.biSize);
@@ -82,29 +110,42 @@ int main() {
     printf("biYPelsPerMeter: %u\n", BITMAPINFOHEADER.biYPelsPerMeter);
     printf("biClrUsed: %u\n", BITMAPINFOHEADER.biClrUsed);
     printf("biClrImportant: %u\n", BITMAPINFOHEADER.biClrImportant);
-
+    if(BITMAPINFOHEADER.biCompression != 0 || BITMAPINFOHEADER.biBitCount != 24){
+        printf("Unsupported type of .bmp file\n");
+        return 1;
+    }
     fseek(bmp, BITMAPFILEHEADER.bfOffBits, SEEK_SET); //file position indicator will be moved at bffOffBist byte
 
     //printf("Each row has : %u Pixels\n", ((BITMAPINFOHEADER.biBitCount * BITMAPINFOHEADER.biWidth +31)/32) * 4);
     //printf("Height: %u\n", BITMAPINFOHEADER.biHeight);
-    int width = ((BITMAPINFOHEADER.biBitCount * BITMAPINFOHEADER.biWidth +31)/32) * 4 ;
+    int width = ((BITMAPINFOHEADER.biBitCount * BITMAPINFOHEADER.biWidth +31)/32) * 4 ; //amount of pixel + padding in a row
     int height = BITMAPINFOHEADER.biHeight;
+    int true_width = BITMAPINFOHEADER.biWidth * 3; // real amount of pixel in a row
     uint8_t pixel;
 
     int Histogram[3][16]; // 0 - red, 1- green 2-blue
-    int image[3][height][width];
+
+    uint8_t ***image = malloc(sizeof(uint8_t **) * 3 );
+    for (int i = 0; i < 3; ++i) {
+        image[i] = malloc(sizeof(uint8_t *) * height);
+        for (int j = 0; j < height; ++j) {
+            image[i][j] = calloc(true_width, sizeof(uint8_t));
+        }
+    }
+
+    //int image[3][height][width];
 
     for (int i = 0; i < 3; ++i) {
         memset(Histogram[i], 0, 16*sizeof(int));
     }
 
-
+    printf("Liczymy");
 
     for (int i = 0; i < height; ++i) {
         int cnt = 0;
         for (int j = 0; j < width; ++j) {
-            fread(&pixel, sizeof pixel, 1, bmp);
-            if(j == width - 1) break;
+            fread(&pixel, sizeof(pixel), 1, bmp);
+            if(j >= true_width) continue;
 
             Histogram[j%3][pixel/16] += 1;
             image[j%3][i][cnt] = pixel;
@@ -123,22 +164,156 @@ int main() {
         }
     }
 
-    FILE *greyscale = fopen("greyscale.bmp", "wb");
-    //uint8_t * fileHeader = malloc(sizeof(uint8_t) * 14);
+    if(argc == 2){
+        printf("Decode steganography? [Y/n]\n");
+        char decision;
+        decision = getchar();
 
-    fwrite(&BITMAPFILEHEADER.bfType, sizeof BITMAPFILEHEADER.bfType, 1 , greyscale);
-    fwrite(&BITMAPFILEHEADER.bfSize, sizeof BITMAPFILEHEADER.bfSize, 1 , greyscale);
-    fwrite(&BITMAPFILEHEADER.bfReserved1, sizeof BITMAPFILEHEADER.bfReserved1, 1 , greyscale);
-    fwrite(&BITMAPFILEHEADER.bfReserved2, sizeof BITMAPFILEHEADER.bfReserved2, 1 , greyscale);
-    fwrite(&BITMAPFILEHEADER.bfOffBits, sizeof BITMAPFILEHEADER.bfOffBits, 1 , greyscale);
-    fwrite(&BITMAPINFOHEADER, sizeof BITMAPINFOHEADER,1 , greyscale);
+        int to_decode;
+        int n_bit = 0, n_sgn = 0;
+        char * s = malloc(sizeof(char) * 9);
+        char * decoded;
+        for (int i = 0; i < 8; ++i) {
+            s[i] = '0';
+        }
+        s[8] = '\0';
+        //printf("%s\n", s);
+        if(decision == 'Y' || decision == 'y'){
+            for (int i = 0; i < height; ++i) {
+                for (int j = 0; j < (int)(true_width/3); ++j) {
+                    for (int k = 0; k < 3; ++k) {
+                        uint8_t pixel2 = image[k][i][j];
+                        if(n_sgn == 0){
+                            s[n_bit] = pixel2 & 1 + 48;
+                            ++n_bit;
+                            if(n_bit == 8){
+                                ++n_sgn;
+                                to_decode = to_num(s);
+                                  //printf("%s %d\n", s, to_decode);
+                                n_bit = 0;
+                                decoded = malloc(sizeof(char) * (to_decode +1)); // we need to decode one more character
+                            }
+                        }
+                        else if(n_sgn <= to_decode){
+                            s[n_bit] = pixel2 & 1 + 48;
+                            ++n_bit;
+                            if(n_bit == 8){
+                                int dec_char = to_num(s);
+                                // printf("%s %d\n", s, to_decode);
+                                decoded[n_sgn-1] = (char)(dec_char);
+                                ++n_sgn;
+                                n_bit = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            decoded[to_decode] = '\0'; // need to terminate this char
+            printf("Decoded message:\n%s\n", decoded);
+            free(decoded);
+            free(s);
+        }
+    }
 
-    int padding = BITMAPINFOHEADER.biSize - 40; // to know how many -0 bits we have to add
-    uint8_t pad[padding];
-    memset(pad,0,sizeof(uint8_t) * padding);
-    fwrite(pad, sizeof(uint8_t) ,padding , greyscale);
+    if(argc == 3){
+        FILE *greyscale = fopen(argv[2], "wb");
 
-    fclose(greyscale);
+        fwrite(&BITMAPFILEHEADER.bfType, sizeof BITMAPFILEHEADER.bfType, 1 , greyscale);
+        fwrite(&BITMAPFILEHEADER.bfSize, sizeof BITMAPFILEHEADER.bfSize, 1 , greyscale);
+        fwrite(&BITMAPFILEHEADER.bfReserved1, sizeof BITMAPFILEHEADER.bfReserved1, 1 , greyscale);
+        fwrite(&BITMAPFILEHEADER.bfReserved2, sizeof BITMAPFILEHEADER.bfReserved2, 1 , greyscale);
+        fwrite(&BITMAPFILEHEADER.bfOffBits, sizeof BITMAPFILEHEADER.bfOffBits, 1 , greyscale);
+        fwrite(&BITMAPINFOHEADER, sizeof BITMAPINFOHEADER,1 , greyscale);
+
+        int padding = BITMAPINFOHEADER.biSize - 40; // to know how many -0 bits we have to add
+        uint8_t pad[padding];
+        memset(pad,0,sizeof(uint8_t) * padding);
+        fwrite(pad, sizeof(uint8_t) ,padding , greyscale);
+
+        fseek(bmp, BITMAPFILEHEADER.bfOffBits, SEEK_SET); // moving pointer at the beggining of pixels
+        //Making greyscale
+        uint8_t additional_pixels[true_width-width];
+        memset(pad,0,sizeof(uint8_t) * (true_width-width));
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < (int)(true_width/3); ++j) {
+                uint8_t greypixel = (unsigned int)(image[0][i][j] + image[1][i][j] + image[2][i][j])/3;
+                fwrite(&greypixel, sizeof(uint8_t), 1, greyscale);
+                fwrite(&greypixel, sizeof(uint8_t), 1, greyscale);
+                fwrite(&greypixel, sizeof(uint8_t), 1, greyscale);
+            }
+            fwrite(additional_pixels, sizeof(uint8_t), (true_width-width), greyscale);
+        }
+        fclose(greyscale);
+    }
+
+    if(argc == 4){
+        FILE *encoded = fopen(argv[2], "wb");
+
+        fwrite(&BITMAPFILEHEADER.bfType, sizeof BITMAPFILEHEADER.bfType, 1 , encoded);
+        fwrite(&BITMAPFILEHEADER.bfSize, sizeof BITMAPFILEHEADER.bfSize, 1 , encoded);
+        fwrite(&BITMAPFILEHEADER.bfReserved1, sizeof BITMAPFILEHEADER.bfReserved1, 1 , encoded);
+        fwrite(&BITMAPFILEHEADER.bfReserved2, sizeof BITMAPFILEHEADER.bfReserved2, 1 , encoded);
+        fwrite(&BITMAPFILEHEADER.bfOffBits, sizeof BITMAPFILEHEADER.bfOffBits, 1 , encoded);
+        fwrite(&BITMAPINFOHEADER, sizeof BITMAPINFOHEADER,1 , encoded);
+
+        int padding = BITMAPINFOHEADER.biSize - 40; // to know how many -0 bits we have to add
+        uint8_t pad[padding];
+        memset(pad,0,sizeof(uint8_t) * padding);
+        fwrite(pad, sizeof(uint8_t) ,padding , encoded);
+
+        fseek(bmp, BITMAPFILEHEADER.bfOffBits, SEEK_SET); // moving pointer at the beggining of pixels
+        uint8_t additional_pixels[true_width-width];
+        memset(pad,0,sizeof(uint8_t) * (true_width-width));
+
+
+        int length = strlen(argv[3]);
+        char * s = malloc(sizeof(char) * 9);
+        for (int i = 0; i < 8; ++i) {
+            s[i] = '0';
+        }
+        to_bin(length, s);
+        int to_encode = length + 1;
+        int n_bit = 0, n_sgn = 0; //current bit to be encoded, current char form string to be encoded
+
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < (int)(true_width/3); ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    uint8_t pixel1 = image[k][i][j];
+                    if(n_sgn < to_encode){
+                        // printf("%d %d %s \t%d\n", n_sgn, n_bit, s, pixel1);
+                        if(s[n_bit] == '0')
+                            pixel1 &= 254;
+                        else
+                            pixel1 |= 1;
+                        // printf("Pixel = %d\n", pixel1);
+                        ++n_bit;
+                        if(n_bit == 8){
+                            n_bit = 0;
+                            ++n_sgn;
+                            to_bin(argv[3][n_sgn-1], s);
+                        }
+                    }
+                    fwrite(&pixel1, sizeof(uint8_t), 1, encoded);
+                }
+            }
+            fwrite(additional_pixels, sizeof(uint8_t), (true_width-width), encoded);
+        }
+
+        free(s);
+        fclose(encoded);
+    }
+
+
+    //freeing the image
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            free(image[j][i]);
+        }
+    }
+    for (int i = 0; i < 3; ++i) {
+        free(image[i]);
+    }
+    free(image);
     fclose(bmp);
     return 0;
 }
