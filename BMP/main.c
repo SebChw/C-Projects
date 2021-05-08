@@ -56,12 +56,17 @@ int to_num(char * s){
     return ans;
 }
 
+struct tagBitMAPFILEHEADER create_f_header(FILE * bmp, struct tagBITMAPFILEHEADER header){
+
+}
+
 int main(int argc, char *argv[]) {
     if(argc < 2 || argc > 4){
         printf("Wrong number of parameters\n");
         return 1;
     }
     FILE * bmp = fopen(argv[1], "rb") ; // file has to be open in binary mode in order to read anything from it
+
     if (!bmp) {
         printf("Failed to open the file!\n");
         return 1;
@@ -156,9 +161,9 @@ int main(int argc, char *argv[]) {
 
     }
     for (int i = 0; i < 3; ++i) {
-        if (i== 0) printf("RED: \n");
+        if (i== 0) printf("BLUE: \n");
         else if (i == 1) printf("GREEN: \n");
-        else printf("BLUE: \n");
+        else printf("RED: \n");
         for (int j = 0; j < 16; ++j) {
             printf("%d-%d: %f%%\n", j*16, (j+1)*16-1, (double)(Histogram[i][j])/(width*height/3)*100);
         }
