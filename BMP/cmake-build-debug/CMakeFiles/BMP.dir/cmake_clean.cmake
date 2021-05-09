@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "BMP.exe"
   "BMP.exe.manifest"
   "BMP.pdb"
+  "CMakeFiles/BMP.dir/bmp_framework.c.obj"
   "CMakeFiles/BMP.dir/main.c.obj"
   "libBMP.dll.a"
 )

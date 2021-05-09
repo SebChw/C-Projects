@@ -74,6 +74,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/BMP/bmp_framework.c">
+			<Option target="BMP"/>
+		</Unit>
+		<Unit filename="D:/AI_year1/LowLevelProgramming/BMP/bmp_framework.h">
+			<Option target="BMP"/>
+		</Unit>
 		<Unit filename="D:/AI_year1/LowLevelProgramming/BMP/main.c">
 			<Option target="BMP"/>
 		</Unit>

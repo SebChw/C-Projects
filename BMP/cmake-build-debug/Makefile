@@ -142,6 +142,33 @@ BMP/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/build
 .PHONY : BMP/fast
 
+bmp_framework.obj: bmp_framework.c.obj
+
+.PHONY : bmp_framework.obj
+
+# target to build an object file
+bmp_framework.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/bmp_framework.c.obj
+.PHONY : bmp_framework.c.obj
+
+bmp_framework.i: bmp_framework.c.i
+
+.PHONY : bmp_framework.i
+
+# target to preprocess a source file
+bmp_framework.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/bmp_framework.c.i
+.PHONY : bmp_framework.c.i
+
+bmp_framework.s: bmp_framework.c.s
+
+.PHONY : bmp_framework.s
+
+# target to generate assembly for a file
+bmp_framework.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/bmp_framework.c.s
+.PHONY : bmp_framework.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -178,6 +205,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... BMP
+	@echo ... bmp_framework.obj
+	@echo ... bmp_framework.i
+	@echo ... bmp_framework.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

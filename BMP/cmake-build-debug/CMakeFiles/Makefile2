@@ -93,12 +93,12 @@ clean: CMakeFiles/BMP.dir/clean
 CMakeFiles/BMP.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BMP.dir\build.make CMakeFiles/BMP.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\AI_year1\LowLevelProgramming\BMP\cmake-build-debug\CMakeFiles --progress-num=1,2 "Built target BMP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\AI_year1\LowLevelProgramming\BMP\cmake-build-debug\CMakeFiles --progress-num=1,2,3 "Built target BMP"
 .PHONY : CMakeFiles/BMP.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/BMP.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\AI_year1\LowLevelProgramming\BMP\cmake-build-debug\CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\AI_year1\LowLevelProgramming\BMP\cmake-build-debug\CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/BMP.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start D:\AI_year1\LowLevelProgramming\BMP\cmake-build-debug\CMakeFiles 0
 .PHONY : CMakeFiles/BMP.dir/rule

@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
-D:/AI_year1/LowLevelProgramming/BMP/main.c
+D:/AI_year1/LowLevelProgramming/BMP/bmp_framework.c
+bmp_framework.h
+D:/AI_year1/LowLevelProgramming/BMP/bmp_framework.h
+
+D:/AI_year1/LowLevelProgramming/BMP/bmp_framework.h
 stdio.h
 -
 stdint.h
